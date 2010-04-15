@@ -78,6 +78,10 @@
 \DeclareOptionX{pstricks}{\def\dtt@format{-fpstricks}}
 \def\dtt@format{-ftikz} % default output format
 
+% Options for text escaping
+\DeclareOptionX{raw}{\def\dtt@texmode{--texmode=raw}}
+\DeclareOptionX{math}{\def\dtt@texmode{--texmode=math}}
+\DeclareOptionX{verbatim}{\def\dtt@texmode{--texmode=verbatim}}
 
 \DeclareOptionX{autosize}{\def\dtt@autosizeopt{--autosize}}
 \def\dtt@autosizeopt{}
@@ -163,6 +167,8 @@
     \def\dtt@procprog{--prog=\progval}}
 \define@choicekey*{dtt}{format}[\outputval\nr]{tikz,pgf,pstricks}[tikz]{%
     \def\dtt@format{--format=\outputval}}
+\define@choicekey*{dtt}{texmode}[\outputval\nr]{raw,math,verbatim}[verbatim]{%
+    \def\dtt@format{--texmode=\outputval}}
 \define@key{dtt}{options}[]{%
     \def\dtt@options{#1}
 }
@@ -187,6 +193,11 @@
 \define@key{dtt}{pgf}[]{\def\dtt@format{--format=pgf}}
 \define@key{dtt}{tikz}[]{\def\dtt@format{--format=tikz}}
 \define@key{dtt}{pstricks}[]{\def\dtt@format{--format=pstricks}}
+% texmode option
+\define@key{dtt}{raw}[]{\def\dtt@format{--texmode=raw}}
+\define@key{dtt}{math}[]{\def\dtt@format{--texmode=math}}
+\define@key{dtt}{verbatim}[]{\def\dtt@format{--texmode=verbatim}}
+
 % command line shortcuts
 \define@key{dtt}{styleonly}[]{\def\dtt@styleonly{--styleonly}}
 \def\dtt@styleonly{}
@@ -199,9 +210,6 @@
 \def\dtt@straightedges{}
 \define@key{dtt}{tikzedgelabels}[]{\def\dtt@tikzedgelabels{--tikzedgelabels}}
 \def\dtt@tikzedgelabels{}
-
-\define@key{dtt}{mathmode}[]{\def\dtt@mathmode{-tmath}}
-\def\dtt@mathmode{}
 
 \define@key{dtt}{graphstyle}[]{\def\dtt@graphstyle{--graphstyle="#1"}}
 \def\dtt@graphstyle{}
@@ -256,13 +264,13 @@
         \IfFileExists{\dtt@figname.dot}{%
             \immediate\write18{dot2tex \dtt@output\space
                 \dtt@format\space
+                \dtt@texmode\space
                 \dtt@tikzedgelabels\space
                 \dtt@straightedges\space
                 \dtt@styleonly\space
                 \dtt@autosizeopt\space
                 \dtt@debugstr\space
                 \dtt@procprog\space
-                \dtt@mathmode\space
                 \dtt@graphstyle\space
                 -o \dtt@figname.tex \dtt@options\space \dtt@figname.dot}
             \IfFileExists{\dtt@figname.tex}{%
