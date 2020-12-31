@@ -57,9 +57,15 @@
 %% Copyright (C) 2007 by Will Robertson & Johannes Große
 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{dot2texi}[2008/05/07 v3.0 Run dot2tex from LaTeX]
+\ProvidesPackage{dot2texi}[2008/05/07 v3.0p1 Run dot2tex from LaTeX]
 \RequirePackage{moreverb}
 \RequirePackage{xkeyval}[2005/02/22]
+
+
+% fix for new moreverb according to the author of this file as state in
+%   https://groups.google.com/forum/?fromgroups#!topic/dot2tex-users/kbjZGRVT5SY
+% fix included by Norbert Preining, renamed the version to v3.0p1
+\@ifundefined{verbatim@out}{\newwrite\verbatim@out}{}%
 
 \newif\ifdtt@ShellEscape
 %\newif\ifmiktex \miktexfalse
@@ -71,6 +77,9 @@
 \DeclareOptionX{noshell}{\dtt@ShellEscapefalse}
 \DeclareOptionX{forceshell}{\dtt@ForceShellEscapetrue\dtt@ShellEscapetrue}
 \DeclareOptionX{miktex}{} % dummy (for backwards compatability)
+
+\DeclareOptionX{cache}{\def\dtt@cacheopt{--cache}}
+\def\dtt@cacheopt{}
 
 % Options for setting output format
 \DeclareOptionX{pgf}{\def\dtt@format{-fpgf}}
@@ -216,6 +225,9 @@
 
 \define@key{dtt}{scale}[]{\def\dtt@graphstyle{--graphstyle="scale=#1,transform shape"}}
 
+\define@key{dtt}{cache}[]{\def\dtt@cacheopt{--cache}}
+\define@key{dtt}{nocache}[]{\def\dtt@cacheopt{}}
+
 \newif\ifdtt@writetofile \dtt@writetofiletrue
 
 \def\dottotexverbatimwrite#1{%
@@ -272,6 +284,7 @@
                 \dtt@debugstr\space
                 \dtt@procprog\space
                 \dtt@graphstyle\space
+		\dtt@cacheopt\space
                 -o \dtt@figname.tex \dtt@options\space \dtt@figname.dot}
             \IfFileExists{\dtt@figname.tex}{%
                 \PackageInfo{dot2texo}{\dtt@figname.dot converted}
